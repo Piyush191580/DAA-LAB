@@ -1,0 +1,40 @@
+#include <stdio.h>
+
+// Recursive function for linear search
+int linearSearch(int arr[], int size, int key, int index) {
+    if (index >= size)
+        return -1; // Key not found
+    if (arr[index] == key)
+        return index; // Key found at index
+    return linearSearch(arr, size, key, index + 1); // Check next index
+}
+
+int main() {
+    int size, key;
+
+    // Get array size from user
+    printf("Enter the number of elements: ");
+    scanf("%d", &size);
+
+    int arr[size];
+
+    // Input array elements
+    printf("Enter %d elements:\n", size);
+    for (int i = 0; i < size; i++) {
+        scanf("%d", &arr[i]);
+    }
+
+    // Get the key to search for
+    printf("Enter the element to search for: ");
+    scanf("%d", &key);
+
+    // Call recursive linear search
+    int result = linearSearch(arr, size, key, 0);
+
+    if (result != -1)
+        printf("Element %d found at index %d\n", key, result);
+    else
+        printf("Element %d not found in the array\n", key);
+
+    return 0;
+}
