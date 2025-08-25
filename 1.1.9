@@ -1,0 +1,43 @@
+#include <stdio.h>
+
+// Structure for an item
+struct Item {
+    int weight;
+    int value;
+};
+
+// Function to swap two items
+void swap(struct Item *a, struct Item *b) {
+    struct Item temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+// Function to sort items by value/weight ratio in descending order
+void sortItems(struct Item items[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = i + 1; j < n; j++) {
+            double r1 = (double)items[i].value / items[i].weight;
+            double r2 = (double)items[j].value / items[j].weight;
+            if (r1 < r2) {
+                swap(&items[i], &items[j]);
+            }
+        }
+    }
+}
+
+// Function to solve fractional knapsack
+double fractionalKnapsack(int W, struct Item items[], int n) {
+    sortItems(items, n);
+
+    double totalValue = 0.0;
+    int currWeight = 0;
+
+    for (int i = 0; i < n; i++) {
+        if (currWeight + items[i].weight <= W) {
+            // Take the whole item
+            currWeight += items[i].weight;
+            totalValue += items[i].value;
+        } else {
+            // Take fraction of the item
+            int remain = W -
