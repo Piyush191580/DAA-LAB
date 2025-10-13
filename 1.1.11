@@ -1,0 +1,119 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int *data;
+    int size;
+    int capacity;
+} MinHeap;
+
+// Function prototypes
+MinHeap* createMinHeap(int capacity);
+void insertMinHeap(MinHeap *heap, int val);
+int extractMin(MinHeap *heap);
+void minHeapify(MinHeap *heap, int idx);
+void swap(int *a, int *b);
+
+int main() {
+    int n;
+    printf("Enter number of elements: ");
+    scanf("%d", &n);
+
+    int *arr = (int*)malloc(n * sizeof(int));
+    printf("Enter the elements (sizes): ");
+    for(int i = 0; i < n; i++) {
+        scanf("%d", &arr[i]);
+    }
+
+    // Create a min heap and insert all elements
+    MinHeap *heap = createMinHeap(n);
+    for(int i = 0; i < n; i++) {
+        insertMinHeap(heap, arr[i]);
+    }
+
+    int totalCost = 0;
+    printf("Merging steps:\n");
+    // While more than one element remains, extract two minimum and merge
+    while(heap->size > 1) {
+        int first = extractMin(heap);
+        int second = extractMin(heap);
+        int merged = first + second;
+        printf("Merged %d and %d to get %d\n", first, second, merged);
+        totalCost += merged;
+        insertMinHeap(heap, merged);
+    }
+
+    printf("Total cost of optimal merging: %d\n", totalCost);
+
+    free(arr);
+    free(heap->data);
+    free(heap);
+
+    return 0;
+}
+
+// Create a min heap with given capacity
+MinHeap* createMinHeap(int capacity) {
+    MinHeap *heap = (MinHeap*)malloc(sizeof(MinHeap));
+    heap->data = (int*)malloc(capacity * sizeof(int));
+    heap->size = 0;
+    heap->capacity = capacity;
+    return heap;
+}
+
+// Insert an element into min heap
+void insertMinHeap(MinHeap *heap, int val) {
+    if(heap->size == heap->capacity) {
+        printf("Heap overflow\n");
+        return;
+    }
+    heap->data[heap->size] = val;
+    int i = heap->size;
+    heap->size++;
+
+    // Fix min heap property if violated
+    while(i != 0 && heap->data[(i - 1) / 2] > heap->data[i]) {
+        swap(&heap->data[i], &heap->data[(i - 1) / 2]);
+        i = (i - 1) / 2;
+    }
+}
+
+// Extract minimum element from heap
+int extractMin(MinHeap *heap) {
+    if(heap->size <= 0)
+        return -1;
+    if(heap->size == 1) {
+        heap->size--;
+        return heap->data[0];
+    }
+
+    int root = heap->data[0];
+    heap->data[0] = heap->data[heap->size - 1];
+    heap->size--;
+    minHeapify(heap, 0);
+
+    return root;
+}
+
+// Min heapify the subtree rooted at idx
+void minHeapify(MinHeap *heap, int idx) {
+    int left = 2 * idx + 1;
+    int right = 2 * idx + 2;
+    int smallest = idx;
+
+    if(left < heap->size && heap->data[left] < heap->data[smallest])
+        smallest = left;
+    if(right < heap->size && heap->data[right] < heap->data[smallest])
+        smallest = right;
+
+    if(smallest != idx) {
+        swap(&heap->data[smallest], &heap->data[idx]);
+        minHeapify(heap, smallest);
+    }
+}
+
+void swap(int *a, int *b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
